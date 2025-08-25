@@ -8,6 +8,7 @@ import ThresholdSettings from '@/components/ThresholdSettings';
 import AuthModal from '@/components/AuthModal';
 import MeasurementHistory from '@/components/MeasurementHistory';
 import AdManager from '@/components/AdManager';
+import ClientOnly from '@/components/ClientOnly';
 import { useAuth } from '@/components/AuthProvider';
 import { DatabaseService } from '@/lib/database';
 import { DEFAULT_WARNING_THRESHOLD } from '@/lib/constants';
@@ -122,10 +123,19 @@ export default function Home() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div>
-            <DecibelMeter 
-              onMeasurement={handleMeasurement}
-              customThreshold={customThreshold}
-            />
+            <ClientOnly fallback={
+              <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading sound meter...</p>
+                </div>
+              </div>
+            }>
+              <DecibelMeter 
+                onMeasurement={handleMeasurement}
+                customThreshold={customThreshold}
+              />
+            </ClientOnly>
           </div>
           
           <div className="space-y-6">
@@ -164,7 +174,16 @@ export default function Home() {
         </div>
 
         <div className="mb-8">
-          <MeasurementHistory />
+          <ClientOnly fallback={
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading measurement history...</p>
+              </div>
+            </div>
+          }>
+            <MeasurementHistory />
+          </ClientOnly>
         </div>
 
         {/* Privacy Notice */}
@@ -178,7 +197,9 @@ export default function Home() {
         </div>
       </main>
 
-      <AdManager />
+      <ClientOnly>
+        <AdManager />
+      </ClientOnly>
     </div>
   );
 }

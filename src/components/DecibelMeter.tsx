@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { AudioProcessor } from '@/lib/audio';
 import { getCategoryForDecibel, DEFAULT_WARNING_THRESHOLD } from '@/lib/constants';
+import { getBrowserCompatibilityMessage } from '@/lib/browserSupport';
 
 interface DecibelMeterProps {
   onMeasurement?: (decibel: number, category: string) => void;
@@ -29,6 +30,13 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
   }, []);
 
   const initializeAudio = async () => {
+    const compatibility = getBrowserCompatibilityMessage();
+    
+    if (!compatibility.isSupported) {
+      setError(`Browser compatibility issues: ${compatibility.issues.join(', ')}`);
+      return;
+    }
+
     if (!AudioProcessor.isSupported()) {
       setError('Web Audio API not supported in this browser');
       return;
@@ -39,7 +47,14 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
       await audioProcessor.current?.initialize();
       setIsInitialized(true);
     } catch (err) {
-      setError((err as Error).message);
+      const errorMessage = (err as Error).message;
+      if (errorMessage.includes('Permission denied')) {
+        setError('Microphone permission denied. Please allow microphone access and try again.');
+      } else if (errorMessage.includes('NotFound')) {
+        setError('No microphone found. Please check your audio devices.');
+      } else {
+        setError(`Failed to initialize audio: ${errorMessage}`);
+      }
     }
   };
 

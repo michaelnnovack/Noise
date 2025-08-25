@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 declare global {
   interface Window {
@@ -42,7 +42,7 @@ export default function AdManager({ onAdComplete }: AdManagerProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  const showInterstitialAd = () => {
+  const showInterstitialAd = useCallback(() => {
     if (!isAdLoaded || !window.adsbygoogle) return;
 
     try {
@@ -81,7 +81,7 @@ export default function AdManager({ onAdComplete }: AdManagerProps) {
     } catch (error) {
       console.warn('Failed to show interstitial ad:', error);
     }
-  };
+  }, [isAdLoaded]);
 
   const showRewardedAd = () => {
     if (!isAdLoaded || !window.adsbygoogle) return;
