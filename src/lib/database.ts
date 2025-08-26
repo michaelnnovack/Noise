@@ -1,8 +1,14 @@
-import { supabase } from './supabase';
+import { createSupabaseClient } from './supabase';
 import { Measurement, User } from '@/types';
 
 export class DatabaseService {
   static async saveMeasurement(measurement: Omit<Measurement, 'id'>): Promise<Measurement | null> {
+    const supabase = createSupabaseClient();
+    if (!supabase) {
+      console.warn('Database not available - Supabase not configured');
+      return null;
+    }
+
     try {
       const { data, error } = await supabase
         .from('measurements')
@@ -29,6 +35,12 @@ export class DatabaseService {
   }
 
   static async getMeasurements(userId: string, limit = 100): Promise<Measurement[]> {
+    const supabase = createSupabaseClient();
+    if (!supabase) {
+      console.warn('Database not available - Supabase not configured');
+      return [];
+    }
+
     try {
       const { data, error } = await supabase
         .from('measurements')
@@ -54,6 +66,12 @@ export class DatabaseService {
     startDate: Date, 
     endDate: Date
   ): Promise<Measurement[]> {
+    const supabase = createSupabaseClient();
+    if (!supabase) {
+      console.warn('Database not available - Supabase not configured');
+      return [];
+    }
+
     try {
       const { data, error } = await supabase
         .from('measurements')
@@ -76,6 +94,12 @@ export class DatabaseService {
   }
 
   static async updateUserProfile(userId: string, updates: Partial<Pick<User, 'custom_threshold'>>): Promise<boolean> {
+    const supabase = createSupabaseClient();
+    if (!supabase) {
+      console.warn('Database not available - Supabase not configured');
+      return false;
+    }
+
     try {
       const { error } = await supabase
         .from('profiles')
@@ -91,6 +115,12 @@ export class DatabaseService {
   }
 
   static async getUserProfile(userId: string): Promise<User | null> {
+    const supabase = createSupabaseClient();
+    if (!supabase) {
+      console.warn('Database not available - Supabase not configured');
+      return null;
+    }
+
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -111,6 +141,12 @@ export class DatabaseService {
   }
 
   static async createUserProfile(user: Omit<User, 'created_at'>): Promise<User | null> {
+    const supabase = createSupabaseClient();
+    if (!supabase) {
+      console.warn('Database not available - Supabase not configured');
+      return null;
+    }
+
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -135,6 +171,12 @@ export class DatabaseService {
   }
 
   static async exportUserData(userId: string): Promise<string> {
+    const supabase = createSupabaseClient();
+    if (!supabase) {
+      console.warn('Database not available - Supabase not configured');
+      return 'Error: Database not available';
+    }
+
     try {
       const measurements = await this.getMeasurements(userId, 10000);
       

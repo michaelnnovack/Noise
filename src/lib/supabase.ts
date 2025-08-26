@@ -1,9 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a function to get supabase client to avoid SSR issues
+export const createSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('Supabase environment variables not configured');
+    return null;
+  }
+  return createClient(supabaseUrl, supabaseAnonKey);
+};
+
+// Export a client instance for compatibility, but check if we're on client-side
+export const supabase = typeof window !== 'undefined' ? createSupabaseClient() : null;
 
 export type Database = {
   public: {
