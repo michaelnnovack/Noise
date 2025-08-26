@@ -1,5 +1,11 @@
 'use client';
 
+import { CALIBRATION_METHODS } from './audioCalibration';
+
+export interface AudioProcessorOptions {
+  calibrationMethod?: string;
+}
+
 export class AudioProcessor {
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
@@ -10,6 +16,15 @@ export class AudioProcessor {
   private measurementInterval: NodeJS.Timeout | null = null;
   private measurements: number[] = [];
   private isCollecting: boolean = false;
+  private calibrationMethod: string;
+
+  constructor(options: AudioProcessorOptions = {}) {
+    this.calibrationMethod = options.calibrationMethod || 'Current Method';
+  }
+
+  setCalibrationMethod(method: string): void {
+    this.calibrationMethod = method;
+  }
 
   async initialize(): Promise<void> {
     try {
@@ -60,20 +75,12 @@ export class AudioProcessor {
         
         const rms = Math.sqrt(sum / this.dataArray.length);
         
-        // Convert RMS to decibels with proper calibration
-        // Using a more realistic calibration for web audio environments
-        let decibel;
-        if (rms > 0.001) { // Threshold for silence detection
-          // Calibrated formula - adjusted for typical web audio and microphone setup
-          // This maps typical quiet room (rms ~0.01) to ~30-40 dB
-          // and normal conversation (rms ~0.1) to ~60-70 dB
-          decibel = 20 * Math.log10(rms) + 50;
-        } else {
-          decibel = 20; // Very quiet/silence baseline
-        }
+        // Apply selected calibration method
+        const method = CALIBRATION_METHODS.find(m => m.name === this.calibrationMethod);
+        const decibel = method ? method.formula(rms) : 20;
         
-        // Allow full range but ensure realistic bounds
-        const clampedDecibel = Math.max(20, Math.min(120, decibel));
+        // Ensure reasonable bounds
+        const clampedDecibel = Math.max(15, Math.min(120, decibel));
         
         // Optional debug logging (enabled via environment variable)
         if (process.env.NODE_ENV === 'development' && this.measurements.length % 60 === 0) {
@@ -145,6 +152,24 @@ export class AudioProcessor {
     this.stream = null;
     this.measurements = [];
     this.isCollecting = false;
+  }
+
+  // Method for calibration testing - exposes RMS calculation
+  getCurrentRMS(): number {
+    if (!this.analyser || !this.dataArray) {
+      return 0;
+    }
+
+    // @ts-expect-error - TypeScript issue with ArrayBufferLike compatibility
+    this.analyser.getByteTimeDomainData(this.dataArray);
+    
+    let sum = 0;
+    for (let i = 0; i < this.dataArray.length; i++) {
+      const sample = (this.dataArray[i] - 128) / 128;
+      sum += sample * sample;
+    }
+    
+    return Math.sqrt(sum / this.dataArray.length);
   }
 
   static isSupported(): boolean {

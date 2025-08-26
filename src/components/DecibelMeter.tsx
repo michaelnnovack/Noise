@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { AudioProcessor } from '@/lib/audio';
 import { getCategoryForDecibel, DEFAULT_WARNING_THRESHOLD } from '@/lib/constants';
 import { getBrowserCompatibilityMessage } from '@/lib/browserSupport';
+import { CALIBRATION_METHODS } from '@/lib/audioCalibration';
+import CalibrationTester from './CalibrationTester';
 
 interface MeasurementResults {
   highest: number;
@@ -22,18 +24,21 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number>(0);
+  const [calibrationMethod, setCalibrationMethod] = useState<string>('RMS Linear Mapping');
+  const [showCalibrationTester, setShowCalibrationTester] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   const audioProcessor = useRef<AudioProcessor | null>(null);
   
   useEffect(() => {
-    audioProcessor.current = new AudioProcessor();
+    audioProcessor.current = new AudioProcessor({ calibrationMethod });
     
     return () => {
       if (audioProcessor.current) {
         audioProcessor.current.cleanup();
       }
     };
-  }, []);
+  }, [calibrationMethod]);
 
   const initializeAudio = async () => {
     const compatibility = getBrowserCompatibilityMessage();
@@ -257,8 +262,90 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
               </div>
             </div>
           )}
+
+          {/* Settings Panel */}
+          <div className="mt-6 border-t border-gray-200 pt-6">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="w-full flex items-center justify-between text-left text-sm font-semibold text-gray-700 hover:text-gray-900"
+            >
+              <div className="flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Calibration Settings
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform ${showSettings ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {showSettings && (
+              <div className="mt-4 space-y-4">
+                {/* Calibration Method Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Calibration Method
+                  </label>
+                  <select
+                    value={calibrationMethod}
+                    onChange={(e) => setCalibrationMethod(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    disabled={isMonitoring}
+                  >
+                    {CALIBRATION_METHODS.map(method => (
+                      <option key={method.name} value={method.name}>
+                        {method.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {CALIBRATION_METHODS.find(m => m.name === calibrationMethod)?.description}
+                  </p>
+                </div>
+
+                {/* Calibration Actions */}
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setShowCalibrationTester(true)}
+                    disabled={isMonitoring}
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+                  >
+                    🧪 Test Calibration
+                  </button>
+                </div>
+
+                {/* Accuracy Notice */}
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <div className="flex items-start">
+                    <svg className="w-4 h-4 text-amber-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-xs font-medium text-amber-800">Accuracy Note</p>
+                      <p className="text-xs text-amber-700 mt-1">
+                        Web-based measurements are estimates. For critical applications, use a calibrated sound level meter.
+                        Results may vary based on device microphone and browser.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Calibration Tester Modal */}
+      {showCalibrationTester && (
+        <CalibrationTester onClose={() => setShowCalibrationTester(false)} />
+      )}
     </div>
   );
 }
