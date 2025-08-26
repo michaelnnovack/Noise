@@ -16,7 +16,9 @@ import { DEFAULT_WARNING_THRESHOLD } from '@/lib/constants';
 export default function Home() {
   const { user, loading } = useAuth();
   const [measurements, setMeasurements] = useState<Array<{
-    decibel: number;
+    highest: number;
+    lowest: number;
+    average: number;
     category: string;
     timestamp: Date;
   }>>([]);
@@ -35,7 +37,9 @@ export default function Home() {
         // Load recent measurements
         const recentMeasurements = await DatabaseService.getMeasurements(user.id, 10);
         const formattedMeasurements = recentMeasurements.map(m => ({
-          decibel: m.decibel_level,
+          highest: m.decibel_level, // For backwards compatibility with single measurements
+          lowest: m.decibel_level,  
+          average: m.decibel_level,
           category: m.category,
           timestamp: m.timestamp
         }));
@@ -52,9 +56,11 @@ export default function Home() {
     }
   }, [user, loading]);
 
-  const handleMeasurement = useCallback(async (decibel: number, category: string) => {
+  const handleMeasurement = useCallback(async (results: { highest: number, lowest: number, average: number }, category: string) => {
     const newMeasurement = {
-      decibel,
+      highest: results.highest,
+      lowest: results.lowest,
+      average: results.average,
       category,
       timestamp: new Date()
     };
@@ -65,11 +71,11 @@ export default function Home() {
       return updated;
     });
 
-    // Save to database if user is logged in
+    // Save to database if user is logged in (using average for backwards compatibility)
     if (user) {
       await DatabaseService.saveMeasurement({
         user_id: user.id,
-        decibel_level: decibel,
+        decibel_level: results.average,
         category,
         timestamp: new Date()
       });
@@ -116,8 +122,8 @@ export default function Home() {
             Real-Time Noise Level Monitor
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Measure environmental noise levels using your device&apos;s microphone. 
-            Monitor sound levels in real-time and get alerts when they exceed safe thresholds.
+            Measure environmental noise levels over 10-second intervals using your device&apos;s microphone. 
+            Get detailed statistics including highest, lowest, and average decibel readings.
           </p>
         </div>
 
@@ -151,16 +157,22 @@ export default function Home() {
                 </h3>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {measurements.slice(0, 10).map((measurement, index) => (
-                    <div key={index} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded">
-                      <span className="font-mono font-bold">
-                        {measurement.decibel.toFixed(1)} dB
-                      </span>
-                      <span className="text-gray-600">
-                        {measurement.category}
-                      </span>
-                      <span className="text-gray-500 text-xs">
-                        {measurement.timestamp.toLocaleTimeString()}
-                      </span>
+                    <div key={index} className="text-sm p-3 bg-gray-50 rounded">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-mono font-bold">
+                          Avg: {measurement.average.toFixed(1)} dB
+                        </span>
+                        <span className="text-gray-600">
+                          {measurement.category}
+                        </span>
+                        <span className="text-gray-500 text-xs">
+                          {measurement.timestamp.toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>High: {measurement.highest.toFixed(1)} dB</span>
+                        <span>Low: {measurement.lowest.toFixed(1)} dB</span>
+                      </div>
                     </div>
                   ))}
                 </div>

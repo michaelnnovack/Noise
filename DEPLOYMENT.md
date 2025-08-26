@@ -11,11 +11,16 @@
    Add these in Vercel Project Settings → Environment Variables:
 
    ```
-   NEXT_PUBLIC_SUPABASE_URL=https://uqolivjyzllwkrfrigfd.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb2xpdmp5emxsd2tyZnJpZ2ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxNTU4MTQsImV4cCI6MjA3MTczMTgxNH0.mXSEmcNfJDK3IzsLRToMlJ1SDCBC17I7r4segzAbyEI
-   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb2xpdmp5emxsd2tyZnJpZ2ZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NjE1NTgxNCwiZXhwIjoyMDcxNzMxODE0fQ.N-EbgI0U6cJOtDUYHGmK6C_mLGWas3_FDBixB-GBTGo
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
    NEXT_PUBLIC_ADSENSE_ID=your_adsense_id_here
    ```
+
+   **⚠️ SECURITY NOTE:** Never commit actual API keys to your repository. Get these values from your Supabase project dashboard:
+   - Go to Settings → API in your Supabase project
+   - Copy the URL and anon key from there
+   - The service role key should only be used on the server side
 
 3. **Deploy**
    - Click "Deploy"

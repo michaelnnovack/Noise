@@ -69,13 +69,12 @@ A modern web application that measures environmental noise levels using your dev
    ```
 
 3. **Set up environment variables**
-   Create a `.env.local` file:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   NEXT_PUBLIC_ADSENSE_ID=your_adsense_id
+   Copy the example environment file and add your actual values:
+   ```bash
+   cp .env.example .env.local
    ```
+   
+   Then edit `.env.local` with your actual Supabase credentials from your project dashboard.
 
 4. **Set up Supabase database**
    - Create a new Supabase project

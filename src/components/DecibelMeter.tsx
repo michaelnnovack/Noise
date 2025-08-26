@@ -5,17 +5,23 @@ import { AudioProcessor } from '@/lib/audio';
 import { getCategoryForDecibel, DEFAULT_WARNING_THRESHOLD } from '@/lib/constants';
 import { getBrowserCompatibilityMessage } from '@/lib/browserSupport';
 
+interface MeasurementResults {
+  highest: number;
+  lowest: number;
+  average: number;
+}
+
 interface DecibelMeterProps {
-  onMeasurement?: (decibel: number, category: string) => void;
+  onMeasurement?: (results: MeasurementResults, category: string) => void;
   customThreshold?: number;
 }
 
 export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_WARNING_THRESHOLD }: DecibelMeterProps) {
-  const [decibel, setDecibel] = useState<number>(0);
+  const [results, setResults] = useState<MeasurementResults | null>(null);
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [measurementType, setMeasurementType] = useState<'single' | 'continuous'>('single');
+  const [countdown, setCountdown] = useState<number>(0);
   
   const audioProcessor = useRef<AudioProcessor | null>(null);
   
@@ -66,28 +72,42 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
 
     try {
       setIsMonitoring(true);
-      audioProcessor.current?.startMonitoring((decibelValue) => {
-        setDecibel(decibelValue);
-        const category = getCategoryForDecibel(decibelValue);
-        onMeasurement?.(decibelValue, category.name);
-        
-        if (measurementType === 'single') {
-          stopMeasurement();
-        }
+      setResults(null);
+      setCountdown(10);
+      
+      // Start countdown
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      audioProcessor.current?.startMonitoring((measurementResults) => {
+        setResults(measurementResults);
+        const category = getCategoryForDecibel(measurementResults.average);
+        onMeasurement?.(measurementResults, category.name);
+        setIsMonitoring(false);
+        setCountdown(0);
       });
     } catch (err) {
       setError((err as Error).message);
       setIsMonitoring(false);
+      setCountdown(0);
     }
   };
 
   const stopMeasurement = () => {
     audioProcessor.current?.stopMonitoring();
     setIsMonitoring(false);
+    setCountdown(0);
   };
 
-  const category = getCategoryForDecibel(decibel);
-  const isWarningLevel = decibel >= customThreshold;
+  const category = results ? getCategoryForDecibel(results.average) : getCategoryForDecibel(0);
+  const isWarningLevel = results ? results.average >= customThreshold : false;
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
@@ -103,46 +123,58 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
       )}
 
       <div className="text-center">
-        <div className={`text-6xl font-bold mb-2 ${isWarningLevel ? 'text-red-600 animate-pulse' : 'text-gray-800'}`}>
-          {decibel.toFixed(1)}
-          <span className="text-2xl ml-2">dB</span>
-        </div>
-        
-        <div className={`inline-block px-4 py-2 rounded-full text-white font-semibold mb-6 ${category.color}`}>
-          {category.name}
-        </div>
+        {isMonitoring && countdown > 0 ? (
+          <div className="text-center">
+            <div className="text-6xl font-bold text-blue-600 mb-2">
+              {countdown}
+            </div>
+            <p className="text-lg text-gray-600 mb-6">Measuring... {countdown}s remaining</p>
+          </div>
+        ) : results ? (
+          <div>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-800">{results.highest.toFixed(1)}</div>
+                <div className="text-sm text-gray-600">Highest dB</div>
+              </div>
+              <div className="text-center">
+                <div className={`text-4xl font-bold mb-2 ${isWarningLevel ? 'text-red-600 animate-pulse' : 'text-gray-800'}`}>
+                  {results.average.toFixed(1)}
+                  <span className="text-2xl ml-1">dB</span>
+                </div>
+                <div className="text-sm text-gray-600">Average</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-800">{results.lowest.toFixed(1)}</div>
+                <div className="text-sm text-gray-600">Lowest dB</div>
+              </div>
+            </div>
+            
+            <div className={`inline-block px-4 py-2 rounded-full text-white font-semibold mb-6 ${category.color}`}>
+              {category.name}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="text-6xl font-bold mb-2 text-gray-400">
+              --.-
+              <span className="text-2xl ml-2">dB</span>
+            </div>
+            
+            <div className="inline-block px-4 py-2 rounded-full text-white font-semibold mb-6 bg-gray-400">
+              Ready to measure
+            </div>
+          </div>
+        )}
 
         <div className="space-y-4">
-          <div className="flex justify-center space-x-4 mb-4">
-            <button
-              onClick={() => setMeasurementType('single')}
-              className={`px-4 py-2 rounded ${
-                measurementType === 'single'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Single
-            </button>
-            <button
-              onClick={() => setMeasurementType('continuous')}
-              className={`px-4 py-2 rounded ${
-                measurementType === 'continuous'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Continuous
-            </button>
-          </div>
-
           {!isMonitoring ? (
             <button
               onClick={startMeasurement}
               disabled={!!error && !AudioProcessor.isSupported()}
               className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition-colors"
             >
-              Start Measuring
+              Start 10-Second Measurement
             </button>
           ) : (
             <button
@@ -154,10 +186,10 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
           )}
         </div>
 
-        {isWarningLevel && decibel > 0 && (
+        {isWarningLevel && results && results.average > 0 && (
           <div className="mt-4 p-3 bg-red-100 border border-red-400 rounded-lg">
             <p className="text-red-700 text-sm font-semibold">
-              ⚠️ Warning: Noise level exceeds safe threshold!
+              ⚠️ Warning: Average noise level exceeds safe threshold!
             </p>
           </div>
         )}

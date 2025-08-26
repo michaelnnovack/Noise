@@ -7,6 +7,9 @@ export class AudioProcessor {
   private dataArray: Uint8Array | null = null;
   private stream: MediaStream | null = null;
   private animationFrame: number | null = null;
+  private measurementInterval: NodeJS.Timeout | null = null;
+  private measurements: number[] = [];
+  private isCollecting: boolean = false;
 
   async initialize(): Promise<void> {
     try {
@@ -25,13 +28,16 @@ export class AudioProcessor {
     }
   }
 
-  startMonitoring(callback: (decibel: number) => void): void {
+  startMonitoring(callback: (results: { highest: number, lowest: number, average: number }) => void): void {
     if (!this.analyser || !this.dataArray) {
       throw new Error('Audio processor not initialized');
     }
 
-    const updateDecibel = () => {
-      if (this.analyser && this.dataArray) {
+    this.measurements = [];
+    this.isCollecting = true;
+
+    const collectMeasurement = () => {
+      if (this.analyser && this.dataArray && this.isCollecting) {
         // @ts-expect-error - TypeScript issue with ArrayBufferLike compatibility
         this.analyser.getByteFrequencyData(this.dataArray);
         
@@ -45,19 +51,46 @@ export class AudioProcessor {
         
         // Clamp to reasonable range
         const clampedDecibel = Math.max(0, Math.min(120, decibel));
-        callback(Math.round(clampedDecibel * 10) / 10);
+        this.measurements.push(Math.round(clampedDecibel * 10) / 10);
         
-        this.animationFrame = requestAnimationFrame(updateDecibel);
+        this.animationFrame = requestAnimationFrame(collectMeasurement);
       }
     };
     
-    updateDecibel();
+    // Start collecting measurements
+    collectMeasurement();
+    
+    // After 10 seconds, calculate stats and call callback
+    this.measurementInterval = setTimeout(() => {
+      this.isCollecting = false;
+      
+      if (this.measurements.length > 0) {
+        const highest = Math.max(...this.measurements);
+        const lowest = Math.min(...this.measurements);
+        const average = this.measurements.reduce((sum, val) => sum + val, 0) / this.measurements.length;
+        
+        callback({
+          highest: Math.round(highest * 10) / 10,
+          lowest: Math.round(lowest * 10) / 10,
+          average: Math.round(average * 10) / 10
+        });
+      }
+      
+      this.stopMonitoring();
+    }, 10000); // 10 seconds
   }
 
   stopMonitoring(): void {
+    this.isCollecting = false;
+    
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
       this.animationFrame = null;
+    }
+    
+    if (this.measurementInterval) {
+      clearTimeout(this.measurementInterval);
+      this.measurementInterval = null;
     }
   }
 
@@ -81,6 +114,8 @@ export class AudioProcessor {
     this.microphone = null;
     this.dataArray = null;
     this.stream = null;
+    this.measurements = [];
+    this.isCollecting = false;
   }
 
   static isSupported(): boolean {
