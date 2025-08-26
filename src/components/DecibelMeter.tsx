@@ -110,89 +110,154 @@ export default function DecibelMeter({ onMeasurement, customThreshold = DEFAULT_
   const isWarningLevel = results ? results.average >= customThreshold : false;
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p className="text-sm">{error}</p>
-          {!AudioProcessor.isSupported() && (
-            <p className="text-xs mt-2">
-              Please use a modern browser with microphone support.
-            </p>
-          )}
-        </div>
-      )}
+    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full filter blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-500 rounded-full filter blur-2xl"></div>
+      </div>
 
-      <div className="text-center">
-        {isMonitoring && countdown > 0 ? (
-          <div className="text-center">
-            <div className="text-6xl font-bold text-blue-600 mb-2">
-              {countdown}
-            </div>
-            <p className="text-lg text-gray-600 mb-6">Measuring... {countdown}s remaining</p>
-          </div>
-        ) : results ? (
-          <div>
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-800">{results.highest.toFixed(1)}</div>
-                <div className="text-sm text-gray-600">Highest dB</div>
+      <div className="relative z-10">
+        {error && (
+          <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-400 text-red-800 px-4 py-3 rounded-lg mb-6">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium">{error}</p>
+                {!AudioProcessor.isSupported() && (
+                  <p className="text-xs mt-1 opacity-75">
+                    Please use a modern browser with microphone support.
+                  </p>
+                )}
               </div>
-              <div className="text-center">
-                <div className={`text-4xl font-bold mb-2 ${isWarningLevel ? 'text-red-600 animate-pulse' : 'text-gray-800'}`}>
-                  {results.average.toFixed(1)}
-                  <span className="text-2xl ml-1">dB</span>
+            </div>
+          </div>
+        )}
+
+        <div className="text-center">
+          {isMonitoring && countdown > 0 ? (
+            <div className="text-center py-8">
+              <div className="relative inline-block mb-6">
+                <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="text-4xl font-bold text-white">
+                    {countdown}
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600">Average</div>
+                <div className="absolute inset-0 rounded-full border-4 border-blue-200 animate-ping"></div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-800">{results.lowest.toFixed(1)}</div>
-                <div className="text-sm text-gray-600">Lowest dB</div>
+              <p className="text-lg font-medium text-gray-700 mb-2">Measuring...</p>
+              <p className="text-sm text-gray-500">{countdown} seconds remaining</p>
+            </div>
+          ) : results ? (
+            <div className="py-6">
+              {/* Main Average Display */}
+              <div className="mb-8">
+                <div className={`text-7xl font-bold mb-3 transition-all duration-300 ${
+                  isWarningLevel 
+                    ? 'text-red-600 animate-pulse drop-shadow-lg' 
+                    : 'text-gray-800'
+                }`}>
+                  {results.average.toFixed(1)}
+                  <span className="text-3xl ml-2 text-gray-500">dB</span>
+                </div>
+                <div className="text-lg font-medium text-gray-600 mb-4">Average Level</div>
+                
+                <div className={`inline-flex items-center px-6 py-3 rounded-full text-white font-bold text-lg shadow-lg transition-all duration-300 ${category.color} ${
+                  isWarningLevel ? 'animate-pulse' : ''
+                }`}>
+                  <div className="w-3 h-3 bg-white rounded-full mr-3 opacity-75"></div>
+                  {category.name}
+                </div>
               </div>
-            </div>
-            
-            <div className={`inline-block px-4 py-2 rounded-full text-white font-semibold mb-6 ${category.color}`}>
-              {category.name}
-            </div>
-          </div>
-        ) : (
-          <div>
-            <div className="text-6xl font-bold mb-2 text-gray-400">
-              --.-
-              <span className="text-2xl ml-2">dB</span>
-            </div>
-            
-            <div className="inline-block px-4 py-2 rounded-full text-white font-semibold mb-6 bg-gray-400">
-              Ready to measure
-            </div>
-          </div>
-        )}
 
-        <div className="space-y-4">
-          {!isMonitoring ? (
-            <button
-              onClick={startMeasurement}
-              disabled={!!error && !AudioProcessor.isSupported()}
-              className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-            >
-              Start 10-Second Measurement
-            </button>
+              {/* High/Low Stats */}
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+                  <div className="flex items-center justify-center mb-2">
+                    <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                    </svg>
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Peak</span>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-800">{results.highest.toFixed(1)}</div>
+                  <div className="text-xs text-gray-500">dB</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+                  <div className="flex items-center justify-center mb-2">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                    </svg>
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Low</span>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-800">{results.lowest.toFixed(1)}</div>
+                  <div className="text-xs text-gray-500">dB</div>
+                </div>
+              </div>
+            </div>
           ) : (
-            <button
-              onClick={stopMeasurement}
-              className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-            >
-              Stop Measuring
-            </button>
+            <div className="py-12">
+              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mb-6">
+                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              
+              <div className="text-5xl font-bold mb-3 text-gray-400">
+                --.-
+                <span className="text-2xl ml-2">dB</span>
+              </div>
+              
+              <div className="inline-block px-6 py-3 rounded-full bg-gray-200 text-gray-600 font-semibold">
+                Ready to measure
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-4 mt-8">
+            {!isMonitoring ? (
+              <button
+                onClick={startMeasurement}
+                disabled={!!error && !AudioProcessor.isSupported()}
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-400 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:hover:scale-100 disabled:hover:shadow-none flex items-center justify-center"
+              >
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Start 10-Second Measurement
+              </button>
+            ) : (
+              <button
+                onClick={stopMeasurement}
+                className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center"
+              >
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9h6v6H9V9z" />
+                </svg>
+                Stop Measuring
+              </button>
+            )}
+          </div>
+
+          {isWarningLevel && results && results.average > 0 && (
+            <div className="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-400 rounded-lg">
+              <div className="flex items-center">
+                <svg className="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <div>
+                  <p className="text-red-800 font-semibold">Hearing Risk Warning</p>
+                  <p className="text-red-700 text-sm mt-1">
+                    Average noise level ({results.average.toFixed(1)} dB) exceeds your safe threshold
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
-
-        {isWarningLevel && results && results.average > 0 && (
-          <div className="mt-4 p-3 bg-red-100 border border-red-400 rounded-lg">
-            <p className="text-red-700 text-sm font-semibold">
-              ⚠️ Warning: Average noise level exceeds safe threshold!
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
