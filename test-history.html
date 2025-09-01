@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History System Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-left: 4px solid; }
+        .pass { border-color: green; background-color: #f0fff0; }
+        .fail { border-color: red; background-color: #fff0f0; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>SoundSense History System Test</h1>
+    
+    <div id="test-results"></div>
+    
+    <button onclick="runTests()">Run Tests</button>
+    <button onclick="addTestData()">Add Test Data</button>
+    <button onclick="viewHistory()">View History</button>
+    <button onclick="clearHistory()">Clear History</button>
+    
+    <div id="history-display" style="margin-top: 20px;"></div>
+
+    <script src="js/history.js"></script>
+    <script>
+        let history = null;
+        let testResults = document.getElementById('test-results');
+        
+        function log(message, pass = true) {
+            const div = document.createElement('div');
+            div.className = `test-result ${pass ? 'pass' : 'fail'}`;
+            div.textContent = message;
+            testResults.appendChild(div);
+        }
+        
+        function runTests() {
+            testResults.innerHTML = '<h3>Running Tests...</h3>';
+            
+            try {
+                // Test 1: Initialize History System
+                history = new MeasurementHistory();
+                log('✓ History system initialized successfully');
+                
+                // Test 2: Add a measurement
+                const testMeasurement = {
+                    averageDb: 65,
+                    minDb: 60,
+                    maxDb: 70,
+                    duration: 30,
+                    location: 'Test Office',
+                    notes: 'Test measurement',
+                    isPremium: false
+                };
+                
+                const saved = history.addMeasurement(testMeasurement);
+                log('✓ Measurement added successfully: ' + JSON.stringify(saved.averageDb + ' dB'));
+                
+                // Test 3: Get measurements
+                const measurements = history.getMeasurements({ limit: 5 });
+                log(`✓ Retrieved ${measurements.length} measurements`);
+                
+                // Test 4: Get statistics
+                const stats = history.getStatistics();
+                log(`✓ Statistics calculated: ${stats.totalMeasurements} measurements, avg ${stats.averageDb} dB`);
+                
+                // Test 5: Export data
+                const csvData = history.exportData('csv');
+                log(`✓ CSV export successful: ${csvData.split('\n').length - 1} records`);
+                
+                // Test 6: Location insights
+                const locationStats = history.getLocationInsights();
+                log(`✓ Location insights: ${Object.keys(locationStats).length} locations tracked`);
+                
+                // Test 7: Trends analysis
+                const trends = history.getExposureTrends('weekly');
+                log(`✓ Trends analysis: ${Object.keys(trends).length} periods analyzed`);
+                
+                log('🎉 All tests passed!', true);
+                
+            } catch (error) {
+                log('❌ Test failed: ' + error.message, false);
+                console.error(error);
+            }
+        }
+        
+        function addTestData() {
+            if (!history) {
+                history = new MeasurementHistory();
+            }
+            
+            // Add several test measurements with different data
+            const testMeasurements = [
+                { averageDb: 45, minDb: 40, maxDb: 50, duration: 30, location: 'Library', isPremium: false },
+                { averageDb: 65, minDb: 60, maxDb: 70, duration: 300, location: 'Office', isPremium: true },
+                { averageDb: 80, minDb: 75, maxDb: 85, duration: 30, location: 'Busy Street', isPremium: false },
+                { averageDb: 55, minDb: 50, maxDb: 60, duration: 30, location: 'Living Room', isPremium: false },
+                { averageDb: 90, minDb: 85, maxDb: 95, duration: 30, location: 'Construction Site', isPremium: false },
+            ];
+            
+            testMeasurements.forEach((measurement, index) => {
+                // Stagger timestamps
+                const testMeasurement = {
+                    ...measurement,
+                    notes: `Test measurement ${index + 1}`
+                };
+                history.addMeasurement(testMeasurement);
+            });
+            
+            log(`✓ Added ${testMeasurements.length} test measurements`);
+            viewHistory();
+        }
+        
+        function viewHistory() {
+            if (!history) {
+                history = new MeasurementHistory();
+            }
+            
+            const measurements = history.getMeasurements({ limit: 10 });
+            const stats = history.getStatistics();
+            const locationStats = history.getLocationInsights();
+            
+            const historyDisplay = document.getElementById('history-display');
+            historyDisplay.innerHTML = `
+                <h3>History Summary</h3>
+                <p><strong>Total Measurements:</strong> ${stats.totalMeasurements}</p>
+                <p><strong>Average dB:</strong> ${stats.averageDb}</p>
+                <p><strong>Range:</strong> ${stats.minDb} - ${stats.maxDb} dB</p>
+                <p><strong>OSHA Compliant:</strong> ${stats.oshaCompliantMeasurements}/${stats.totalMeasurements}</p>
+                
+                <h4>Recent Measurements:</h4>
+                <ul>
+                    ${measurements.map(m => `
+                        <li>${m.averageDb} dB - ${m.location} - ${new Date(m.timestamp).toLocaleString()}</li>
+                    `).join('')}
+                </ul>
+                
+                <h4>Locations:</h4>
+                <ul>
+                    ${Object.entries(locationStats).map(([location, stats]) => `
+                        <li>${location}: ${stats.averageDb} dB avg (${stats.count} measurements, ${stats.riskLevel} risk)</li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+        
+        function clearHistory() {
+            if (!history) return;
+            history.clearHistory();
+            log('✓ History cleared');
+            document.getElementById('history-display').innerHTML = '<p>History cleared.</p>';
+        }
+    </script>
+</body>
+</html>

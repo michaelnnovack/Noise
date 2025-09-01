@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundSense - Enhanced Health Warnings Demo</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        .demo-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .demo-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .demo-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .demo-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .safe { background: #22c55e; color: white; }
+        .moderate { background: #f59e0b; color: white; }
+        .dangerous { background: #ef4444; color: white; }
+        .emergency { background: #991b1b; color: white; }
+    </style>
+</head>
+<body>
+    <main class="min-h-screen bg-gray-50">
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-4xl mx-auto px-4 py-6">
+                <div class="flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-600 text-3xl mr-3">health_and_safety</span>
+                    <h1 class="text-2xl font-bold text-gray-900">Enhanced Health Warnings Demo</h1>
+                </div>
+                <p class="text-center text-gray-600 mt-2">Professional noise health assessment system</p>
+            </div>
+        </header>
+
+        <section class="max-w-4xl mx-auto px-4 py-8">
+            <!-- Demo Controls -->
+            <div class="demo-section">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Test Different Noise Levels</h2>
+                <div class="demo-controls">
+                    <button class="demo-button safe" onclick="testHealthWarning(35, 'Library Reading Room')">
+                        35 dB - Library
+                    </button>
+                    <button class="demo-button safe" onclick="testHealthWarning(55, 'Office Environment')">
+                        55 dB - Office
+                    </button>
+                    <button class="demo-button moderate" onclick="testHealthWarning(75, 'Heavy Traffic')">
+                        75 dB - Traffic
+                    </button>
+                    <button class="demo-button dangerous" onclick="testHealthWarning(90, 'Construction Site')">
+                        90 dB - Construction
+                    </button>
+                    <button class="demo-button emergency" onclick="testHealthWarning(105, 'Rock Concert')">
+                        105 dB - Concert
+                    </button>
+                </div>
+            </div>
+
+            <!-- Current Reading Display -->
+            <div class="demo-section">
+                <div class="text-center">
+                    <div class="flex items-baseline justify-center mb-4">
+                        <span id="current-db-demo" class="text-6xl font-bold text-gray-900">--</span>
+                        <span class="text-2xl text-gray-600 ml-2">dB</span>
+                    </div>
+                    
+                    <div id="current-classification" class="inline-block px-6 py-3 rounded-full font-semibold text-lg mb-4 bg-gray-100 text-gray-800">
+                        Select a noise level to test
+                    </div>
+                    
+                    <div id="current-description" class="text-gray-600 text-lg mb-4">
+                        Demonstration of enhanced health warning system
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Health Warning Display -->
+            <div id="health-warning-demo" class="demo-section" style="display: none;">
+                <!-- Health warning content will be populated here -->
+            </div>
+
+            <!-- Health Dashboard Demo -->
+            <div id="health-dashboard-demo" class="demo-section" style="display: none;">
+                <div class="flex items-center mb-6">
+                    <span class="material-symbols-outlined text-purple-600 mr-2 text-2xl">analytics</span>
+                    <h3 class="text-xl font-bold text-gray-900">Personal Health Analysis</h3>
+                </div>
+                
+                <!-- Health Metrics Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-xl p-4 text-center shadow-sm border">
+                        <div class="text-xl font-bold text-green-600" id="demo-twa">--</div>
+                        <div class="text-sm text-gray-600">Time-Weighted Avg</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 text-center shadow-sm border">
+                        <div class="text-xl font-bold text-orange-600" id="demo-exposure">--</div>
+                        <div class="text-sm text-gray-600">Daily Exposure</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 text-center shadow-sm border">
+                        <div class="text-xl font-bold text-blue-600" id="demo-compliance">--</div>
+                        <div class="text-sm text-gray-600">OSHA Status</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 text-center shadow-sm border">
+                        <div class="text-xl font-bold text-purple-600" id="demo-safe-time">--</div>
+                        <div class="text-sm text-gray-600">Safe Exposure</div>
+                    </div>
+                </div>
+                
+                <!-- Risk Assessment Bar -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Current Risk Level</span>
+                        <span id="demo-risk-level" class="font-semibold text-green-600">LOW</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-4 mb-3">
+                        <div id="demo-risk-bar" class="bg-green-500 h-4 rounded-full transition-all duration-500" style="width: 25%"></div>
+                    </div>
+                    <div class="grid grid-cols-4 text-xs text-center">
+                        <div class="text-green-600">Safe</div>
+                        <div class="text-blue-600">Low</div>
+                        <div class="text-yellow-600">Moderate</div>
+                        <div class="text-red-600">High</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Summary -->
+            <div class="demo-section">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Enhanced Health Features</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+                            <span class="material-symbols-outlined text-green-600 mr-2">check_circle</span>
+                            Immediate Health Feedback
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Color-coded risk levels (Green/Yellow/Orange/Red)</li>
+                            <li>• Real-time health warnings during measurement</li>
+                            <li>• Immediate action recommendations</li>
+                            <li>• Emergency-level noise warnings (100+ dB)</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+                            <span class="material-symbols-outlined text-blue-600 mr-2">analytics</span>
+                            Time-Weighted Exposure Assessment
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• OSHA/NIOSH 8-hour exposure calculations</li>
+                            <li>• WHO guideline compliance checking</li>
+                            <li>• Personal exposure dose tracking</li>
+                            <li>• Safe exposure duration recommendations</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+                            <span class="material-symbols-outlined text-orange-600 mr-2">visibility</span>
+                            Visual Health Indicators
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Health status badges on results</li>
+                            <li>• Risk level gauges and progress bars</li>
+                            <li>• Warning icons with severity levels</li>
+                            <li>• Professional health report formatting</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2 flex items-center">
+                            <span class="material-symbols-outlined text-purple-600 mr-2">school</span>
+                            Educational Content
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Noise source health impact explanations</li>
+                            <li>• Hearing protection recommendations</li>
+                            <li>• Long-term exposure effects information</li>
+                            <li>• Professional workplace safety guidance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/classifier.js"></script>
+    <script>
+        // Initialize the enhanced health classifier
+        const classifier = new NoiseClassifier();
+        
+        function testHealthWarning(dbLevel, source) {
+            // Update display
+            document.getElementById('current-db-demo').textContent = dbLevel;
+            
+            // Get classification and health feedback
+            const classification = classifier.classify(dbLevel);
+            const healthFeedback = classifier.getRealTimeHealthFeedback(dbLevel, 30);
+            const healthAnalysis = classifier.generatePremiumHealthAnalysis(dbLevel, 30, dbLevel);
+            
+            // Update classification display
+            const categoryElement = document.getElementById('current-classification');
+            categoryElement.textContent = classification.category;
+            categoryElement.className = `inline-block px-6 py-3 rounded-full font-semibold text-lg mb-4 ${getClassificationStyle(classification.riskZone)}`;
+            
+            // Update description
+            document.getElementById('current-description').innerHTML = `
+                <div class="text-lg text-gray-600 mb-2">${classification.description}</div>
+                <div class="text-sm text-gray-500">Source: ${source}</div>
+            `;
+            
+            // Show and update health warning
+            displayHealthWarning(healthFeedback);
+            
+            // Show and update health dashboard
+            displayHealthDashboard(healthAnalysis);
+        }
+        
+        function getClassificationStyle(riskZone) {
+            const styles = {
+                'green': 'bg-green-100 text-green-800 border-green-200',
+                'yellow': 'bg-yellow-100 text-yellow-800 border-yellow-200', 
+                'orange': 'bg-orange-100 text-orange-800 border-orange-200',
+                'red': 'bg-red-100 text-red-800 border-red-200'
+            };
+            return styles[riskZone] || 'bg-gray-100 text-gray-800';
+        }
+        
+        function displayHealthWarning(healthFeedback) {
+            const warningContainer = document.getElementById('health-warning-demo');
+            warningContainer.style.display = 'block';
+            
+            let warningHTML = '';
+            
+            if (healthFeedback.level === 'minimal' || healthFeedback.level === 'low') {
+                warningHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-start">
+                            <span class="material-symbols-outlined text-green-600 mr-3 text-xl">${healthFeedback.visualIndicators.statusBadge.icon}</span>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-green-900 mb-2">Safe Noise Level</h3>
+                                <p class="text-sm text-green-800">${healthFeedback.message}</p>
+                                <p class="text-xs text-green-700 mt-2">${healthFeedback.recommendation}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (healthFeedback.level === 'moderate') {
+                warningHTML = `
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-start">
+                            <span class="material-symbols-outlined text-yellow-600 mr-3 text-xl">${healthFeedback.visualIndicators.statusBadge.icon}</span>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-yellow-900 mb-2">Moderate Risk Level</h3>
+                                <p class="text-sm text-yellow-800">${healthFeedback.message}</p>
+                                <p class="text-xs text-yellow-700 mt-2">${healthFeedback.recommendation}</p>
+                                ${healthFeedback.exposureDose > 0 ? `
+                                    <div class="mt-3">
+                                        <div class="text-xs text-yellow-700">Daily exposure: ${healthFeedback.exposureDose}% of safe limit</div>
+                                        <div class="w-full bg-yellow-200 rounded-full h-2 mt-1">
+                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: ${Math.min(100, healthFeedback.exposureDose)}%"></div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (healthFeedback.level === 'high') {
+                warningHTML = `
+                    <div class="bg-orange-50 border-2 border-orange-300 rounded-lg p-4 animate-health-pulse">
+                        <div class="flex items-start">
+                            <span class="material-symbols-outlined text-orange-600 mr-3 text-xl">${healthFeedback.visualIndicators.statusBadge.icon}</span>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-orange-900 mb-2">⚠️ High Risk Level</h3>
+                                <p class="text-sm text-orange-800 font-medium">${healthFeedback.message}</p>
+                                <p class="text-xs text-orange-700 mt-2">${healthFeedback.recommendation}</p>
+                                <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <span class="font-medium text-orange-900">TWA:</span>
+                                        <span class="text-orange-700">${healthFeedback.timeWeightedAverage} dB</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-orange-900">Safe Time:</span>
+                                        <span class="text-orange-700">${healthFeedback.safeExposureTime}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (healthFeedback.level === 'critical') {
+                warningHTML = `
+                    <div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 animate-emergency">
+                        <div class="flex items-start">
+                            <span class="material-symbols-outlined text-red-600 mr-3 text-xl animate-health-pulse">${healthFeedback.visualIndicators.statusBadge.icon}</span>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-red-900 mb-2">🚨 CRITICAL: Immediate Danger</h3>
+                                <p class="text-sm text-red-800 font-medium">${healthFeedback.message}</p>
+                                <p class="text-xs text-red-700 mt-2 font-medium">${healthFeedback.recommendation}</p>
+                                <div class="mt-4 space-y-2">
+                                    <div class="font-medium text-red-900 text-sm">Immediate Actions Required:</div>
+                                    ${healthFeedback.actionRequired.slice(0, 3).map(action => 
+                                        `<div class="text-xs text-red-800 flex items-start">
+                                            <span class="w-1 h-1 bg-red-600 rounded-full mr-2 mt-1.5"></span>
+                                            ${action}
+                                        </div>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            warningContainer.innerHTML = warningHTML;
+        }
+        
+        function displayHealthDashboard(healthAnalysis) {
+            const dashboard = document.getElementById('health-dashboard-demo');
+            dashboard.style.display = 'block';
+            
+            // Update metrics
+            document.getElementById('demo-twa').textContent = `${healthAnalysis.timeWeightedAverage} dB`;
+            document.getElementById('demo-exposure').textContent = `${Math.round(healthAnalysis.exposureDose)}%`;
+            document.getElementById('demo-compliance').textContent = healthAnalysis.oshaCompliant ? 'Compliant' : 'Non-Compliant';
+            document.getElementById('demo-safe-time').textContent = `${healthAnalysis.safeExposureTime}h`;
+            
+            // Update risk level display
+            const riskLevel = document.getElementById('demo-risk-level');
+            const riskBar = document.getElementById('demo-risk-bar');
+            
+            riskLevel.textContent = healthAnalysis.riskLevel.toUpperCase();
+            riskLevel.className = `font-semibold ${getRiskTextColor(healthAnalysis.riskLevel)}`;
+            
+            const percentage = getRiskPercentage(healthAnalysis.riskLevel);
+            riskBar.style.width = `${percentage}%`;
+            riskBar.className = `h-4 rounded-full transition-all duration-500 ${getRiskBarColor(healthAnalysis.riskLevel)}`;
+        }
+        
+        function getRiskTextColor(level) {
+            const colors = {
+                'low': 'text-green-600',
+                'moderate': 'text-yellow-600',
+                'high': 'text-red-600'
+            };
+            return colors[level] || 'text-gray-600';
+        }
+        
+        function getRiskBarColor(level) {
+            const colors = {
+                'low': 'bg-green-500',
+                'moderate': 'bg-yellow-500',
+                'high': 'bg-red-500'
+            };
+            return colors[level] || 'bg-gray-500';
+        }
+        
+        function getRiskPercentage(level) {
+            const percentages = {
+                'low': 25,
+                'moderate': 60,
+                'high': 85
+            };
+            return percentages[level] || 25;
+        }
+        
+        // Initialize with a safe level
+        window.onload = function() {
+            testHealthWarning(45, 'Quiet Office Environment');
+        };
+    </script>
+</body>
+</html>

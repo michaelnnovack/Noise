@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundSense Phase 2 - Comprehensive Testing</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/gauge.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+        .test-console {
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+            white-space: pre-wrap;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .test-status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status-running { background: #fef3c7; color: #d97706; }
+        .status-complete { background: #d1fae5; color: #065f46; }
+        .status-error { background: #fee2e2; color: #dc2626; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .feature-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .test-progress {
+            width: 100%;
+            height: 20px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <span class="material-symbols-outlined text-red-600 text-4xl mr-3 align-middle">science</span>
+                SoundSense Phase 2 Testing
+            </h1>
+            <p class="text-gray-600">Comprehensive end-to-end testing of all enhanced features</p>
+        </header>
+
+        <!-- Test Controls -->
+        <div class="bg-white rounded-xl p-6 mb-6 shadow-lg">
+            <div class="test-controls">
+                <button id="runAllTests" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                    <span class="material-symbols-outlined">play_arrow</span>
+                    Run All Tests
+                </button>
+                <button id="runVideoAdTests" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                    <span class="material-symbols-outlined">video_library</span>
+                    Video Ad Tests
+                </button>
+                <button id="runPremiumTests" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                    <span class="material-symbols-outlined">star</span>
+                    Premium Tests
+                </button>
+                <button id="runHistoryTests" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                    <span class="material-symbols-outlined">history</span>
+                    History Tests
+                </button>
+                <button id="clearConsole" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                    <span class="material-symbols-outlined">clear</span>
+                    Clear Console
+                </button>
+            </div>
+            
+            <div id="testStatus" class="test-status status-running" style="display: none;">
+                <span id="statusText">Ready to run tests</span>
+            </div>
+            
+            <div class="test-progress">
+                <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Feature Status Grid -->
+        <div id="featureGrid" class="feature-grid">
+            <!-- Features will be populated here -->
+        </div>
+
+        <!-- Test Console -->
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span class="material-symbols-outlined text-gray-600 mr-2">terminal</span>
+                Test Console
+            </h3>
+            <div id="testConsole" class="test-console">
+Phase 2 Testing Console Ready
+
+🧪 Available Test Suites:
+- Video Ad Integration & Premium Unlock Flow
+- Premium Features (5-minute measurements, advanced analysis)
+- Enhanced Health Warnings (6-zone risk assessment)
+- Measurement History (statistics, trends, persistence)
+- Complete User Flow Integration
+- Mobile Responsiveness
+- Error Handling & Edge Cases
+- Performance & Memory Management
+
+Click "Run All Tests" to begin comprehensive testing...
+            </div>
+        </div>
+
+        <!-- Results Summary (Hidden initially) -->
+        <div id="resultsSummary" class="bg-white rounded-xl p-6 shadow-lg mt-6" style="display: none;">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span class="material-symbols-outlined text-green-600 mr-2">assessment</span>
+                Test Results Summary
+            </h3>
+            <div id="summaryContent"></div>
+        </div>
+    </div>
+
+    <!-- Load all Phase 2 modules -->
+    <script src="js/audio-processor.js"></script>
+    <script src="js/gauge.js"></script>
+    <script src="js/classifier.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/premium-features.js"></script>
+    <script src="js/monetization.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Load comprehensive test suite -->
+    <script src="phase2-comprehensive-test.js"></script>
+    
+    <script>
+        // Test Runner UI Controller
+        class TestRunnerUI {
+            constructor() {
+                this.console = document.getElementById('testConsole');
+                this.statusDiv = document.getElementById('testStatus');
+                this.statusText = document.getElementById('statusText');
+                this.progressBar = document.getElementById('progressBar');
+                this.featureGrid = document.getElementById('featureGrid');
+                this.resultsSummary = document.getElementById('resultsSummary');
+                
+                this.setupEventListeners();
+                this.initializeFeatureGrid();
+                
+                console.log('Test Runner UI initialized');
+            }
+            
+            setupEventListeners() {
+                document.getElementById('runAllTests').addEventListener('click', () => {
+                    this.runFullTestSuite();
+                });
+                
+                document.getElementById('runVideoAdTests').addEventListener('click', () => {
+                    this.runSpecificTest('video-ads');
+                });
+                
+                document.getElementById('runPremiumTests').addEventListener('click', () => {
+                    this.runSpecificTest('premium');
+                });
+                
+                document.getElementById('runHistoryTests').addEventListener('click', () => {
+                    this.runSpecificTest('history');
+                });
+                
+                document.getElementById('clearConsole').addEventListener('click', () => {
+                    this.clearConsole();
+                });
+            }
+            
+            initializeFeatureGrid() {
+                const features = [
+                    {
+                        name: 'Video Ad Integration',
+                        description: 'Ad serving, premium unlock flow, completion tracking',
+                        status: 'pending',
+                        icon: 'video_library'
+                    },
+                    {
+                        name: 'Premium Features',
+                        description: '5-minute measurements, advanced statistics, professional analysis',
+                        status: 'pending',
+                        icon: 'star'
+                    },
+                    {
+                        name: 'Enhanced Health Warnings',
+                        description: '6-zone risk assessment, real-time feedback, OSHA compliance',
+                        status: 'pending',
+                        icon: 'health_and_safety'
+                    },
+                    {
+                        name: 'Measurement History',
+                        description: 'Data persistence, statistics, trend analysis, export',
+                        status: 'pending',
+                        icon: 'history'
+                    },
+                    {
+                        name: 'Mobile Responsiveness',
+                        description: 'Touch optimization, responsive design, modal adaptation',
+                        status: 'pending',
+                        icon: 'phone_android'
+                    },
+                    {
+                        name: 'Performance & Memory',
+                        description: 'Initialization speed, memory management, DOM performance',
+                        status: 'pending',
+                        icon: 'speed'
+                    }
+                ];
+                
+                this.featureGrid.innerHTML = features.map(feature => `
+                    <div class="feature-card" id="feature-${feature.name.toLowerCase().replace(/\\s+/g, '-')}">
+                        <div class="feature-status">
+                            <span class="material-symbols-outlined text-gray-400">${feature.icon}</span>
+                            <span>${feature.name}</span>
+                            <span id="status-${feature.name.toLowerCase().replace(/\\s+/g, '-')}" class="ml-auto">⏳</span>
+                        </div>
+                        <p class="text-sm text-gray-600">${feature.description}</p>
+                        <div class="mt-2">
+                            <div class="text-xs text-gray-500">Status: <span class="font-medium">Waiting for tests</span></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            async runFullTestSuite() {
+                this.showStatus('Running comprehensive Phase 2 tests...', 'running');
+                this.clearConsole();
+                this.logToConsole('🚀 Starting comprehensive Phase 2 test suite...');
+                
+                try {
+                    // Override console.log to capture test output
+                    const originalConsoleLog = console.log;
+                    console.log = (...args) => {
+                        this.logToConsole(args.join(' '));
+                        originalConsoleLog.apply(console, args);
+                    };
+                    
+                    // Wait for test suite to be ready
+                    await this.waitForTestSuite();
+                    
+                    // Run the comprehensive test suite
+                    const testSuite = new Phase2TestSuite();
+                    const results = await testSuite.runAllTests();
+                    
+                    // Restore console.log
+                    console.log = originalConsoleLog;
+                    
+                    this.updateFeatureStatus(results);
+                    this.showResultsSummary(results);
+                    this.showStatus('All tests completed!', 'complete');
+                    this.setProgress(100);
+                    
+                } catch (error) {
+                    console.error('Test suite failed:', error);
+                    this.showStatus('Test suite failed: ' + error.message, 'error');
+                    this.logToConsole('❌ Test suite failed: ' + error.message);
+                }
+            }
+            
+            async runSpecificTest(testType) {
+                this.showStatus(`Running ${testType} tests...`, 'running');
+                this.logToConsole(`🎯 Running ${testType} specific tests...`);
+                
+                try {
+                    const testSuite = new Phase2TestSuite();
+                    
+                    switch (testType) {
+                        case 'video-ads':
+                            await testSuite.testVideoAdFlow();
+                            await testSuite.testMonetizationSystem();
+                            break;
+                        case 'premium':
+                            await testSuite.testPremiumFeatures();
+                            break;
+                        case 'history':
+                            await testSuite.testHistorySystem();
+                            await testSuite.testDataPersistence();
+                            break;
+                    }
+                    
+                    this.showStatus(`${testType} tests completed!`, 'complete');
+                    
+                } catch (error) {
+                    this.showStatus(`${testType} tests failed: ` + error.message, 'error');
+                }
+            }
+            
+            async waitForTestSuite() {
+                return new Promise((resolve) => {
+                    const check = () => {
+                        if (typeof Phase2TestSuite !== 'undefined') {
+                            resolve();
+                        } else {
+                            setTimeout(check, 100);
+                        }
+                    };
+                    check();
+                });
+            }
+            
+            updateFeatureStatus(results) {
+                const featureMapping = {
+                    'video-ad-integration': ['Video Ad Flow', 'Ad Loading Screen', 'Premium Unlock Notification'],
+                    'premium-features': ['Premium Activation', 'Premium Duration', 'Extended Measurement Start'],
+                    'enhanced-health-warnings': ['High Risk Warning', 'Real-time Health Feedback', 'Emergency Detection'],
+                    'measurement-history': ['Add Measurement 1', 'Statistics Calculation', 'Location Insights'],
+                    'mobile-responsiveness': ['Viewport Meta Tag', 'Responsive CSS Classes', 'Touch-Friendly Buttons'],
+                    'performance-&-memory': ['Memory Management', 'Initialization Performance', 'DOM Performance']
+                };
+                
+                Object.entries(featureMapping).forEach(([featureId, testNames]) => {
+                    const relatedTests = results.results.filter(r => testNames.includes(r.test));
+                    const passed = relatedTests.filter(r => r.status === 'Pass').length;
+                    const total = relatedTests.length;
+                    
+                    const statusElement = document.getElementById(`status-${featureId}`);
+                    if (statusElement && total > 0) {
+                        const percentage = Math.round((passed / total) * 100);
+                        if (percentage === 100) {
+                            statusElement.textContent = '✅';
+                        } else if (percentage >= 75) {
+                            statusElement.textContent = '🟨';
+                        } else if (percentage >= 50) {
+                            statusElement.textContent = '⚠️';
+                        } else {
+                            statusElement.textContent = '❌';
+                        }
+                    }
+                });
+            }
+            
+            showResultsSummary(results) {
+                const summaryHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <div class="text-2xl font-bold text-green-600">${results.summary.passed}</div>
+                            <div class="text-sm text-green-700">Passed</div>
+                        </div>
+                        <div class="text-center p-4 bg-red-50 rounded-lg">
+                            <div class="text-2xl font-bold text-red-600">${results.summary.failed}</div>
+                            <div class="text-sm text-red-700">Failed</div>
+                        </div>
+                        <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                            <div class="text-2xl font-bold text-yellow-600">${results.summary.warnings}</div>
+                            <div class="text-sm text-yellow-700">Warnings</div>
+                        </div>
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <div class="text-2xl font-bold text-blue-600">${Math.round((results.summary.passed / results.summary.total) * 100)}%</div>
+                            <div class="text-sm text-blue-700">Success Rate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="font-bold text-lg mb-2">Production Readiness</h4>
+                        <div class="p-4 rounded-lg ${results.productionReady ? 'bg-green-50 text-green-800' : 'bg-yellow-50 text-yellow-800'}">
+                            ${results.productionReady ? '🎉 Ready for Production Deployment' : '⚠️ Needs Minor Fixes Before Production'}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-lg mb-2">Test Duration</h4>
+                        <p class="text-gray-600">${Math.round(results.duration / 1000)} seconds</p>
+                    </div>
+                `;
+                
+                document.getElementById('summaryContent').innerHTML = summaryHTML;
+                this.resultsSummary.style.display = 'block';
+            }
+            
+            showStatus(message, type) {
+                this.statusDiv.style.display = 'block';
+                this.statusText.textContent = message;
+                this.statusDiv.className = `test-status status-${type}`;
+            }
+            
+            setProgress(percentage) {
+                this.progressBar.style.width = `${percentage}%`;
+            }
+            
+            logToConsole(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                this.console.textContent += `[${timestamp}] ${message}\\n`;
+                this.console.scrollTop = this.console.scrollHeight;
+            }
+            
+            clearConsole() {
+                this.console.textContent = 'Console cleared...\\n';
+            }
+        }
+        
+        // Initialize test runner UI when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.testRunnerUI = new TestRunnerUI();
+        });
+    </script>
+</body>
+</html>

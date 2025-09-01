@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundSense Premium Features Test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Additional test styles */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f9fafb;
+            padding: 2rem;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .test-button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+        .test-button:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+        .feature-preview {
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">SoundSense Premium Features</h1>
+            <p class="text-xl text-gray-600">Interactive demonstration of premium capabilities</p>
+        </header>
+
+        <!-- Premium Statistics Test -->
+        <div class="test-section">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="material-symbols-outlined text-green-600 mr-2">analytics</span>
+                Premium Statistics
+            </h2>
+            <button class="test-button" onclick="showPremiumStats()">Show Premium Statistics</button>
+            <div id="stats-preview" class="feature-preview">
+                <p class="text-gray-500">Click the button to see premium statistics visualization</p>
+            </div>
+        </div>
+
+        <!-- Health Analysis Test -->
+        <div class="test-section">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="material-symbols-outlined text-red-600 mr-2">health_and_safety</span>
+                Professional Health Analysis
+            </h2>
+            <button class="test-button" onclick="showHealthAnalysis('low')">Low Risk (65 dB)</button>
+            <button class="test-button" onclick="showHealthAnalysis('moderate')">Moderate Risk (75 dB)</button>
+            <button class="test-button" onclick="showHealthAnalysis('high')">High Risk (95 dB)</button>
+            <div id="health-preview" class="feature-preview">
+                <p class="text-gray-500">Select a risk level to see professional health analysis</p>
+            </div>
+        </div>
+
+        <!-- Monetization Test -->
+        <div class="test-section">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="material-symbols-outlined text-blue-600 mr-2">play_circle</span>
+                Video Ad Integration
+            </h2>
+            <button class="test-button" onclick="simulateVideoAd()">Simulate Video Ad</button>
+            <button class="test-button" onclick="showUpgradePrompt()">Show Upgrade Prompt</button>
+            <div id="ad-preview" class="feature-preview">
+                <p class="text-gray-500">Test video ad and premium upgrade flow</p>
+            </div>
+        </div>
+
+        <!-- Data Export Test -->
+        <div class="test-section">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="material-symbols-outlined text-purple-600 mr-2">download</span>
+                Data Export
+            </h2>
+            <button class="test-button" onclick="generateSampleData()">Generate Sample Export</button>
+            <div id="export-preview" class="feature-preview">
+                <p class="text-gray-500">Generate and preview exported measurement data</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/premium-features.js"></script>
+    <script src="js/classifier.js"></script>
+    <script src="js/monetization.js"></script>
+    <script>
+        // Test functions to demonstrate premium features
+        let premiumFeatures = new PremiumFeatures();
+        let classifier = new NoiseClassifier();
+        let monetization = new Monetization();
+
+        function showPremiumStats() {
+            const preview = document.getElementById('stats-preview');
+            preview.innerHTML = `
+                <div class="premium-section p-4">
+                    <div class="flex items-center mb-4">
+                        <span class="premium-badge">Premium Active</span>
+                        <span class="ml-auto text-sm text-gray-600">5-minute session</span>
+                    </div>
+                    
+                    <div class="premium-stats-grid">
+                        <div class="premium-stat-card">
+                            <div class="premium-stat-value text-green-600">42 dB</div>
+                            <div class="premium-stat-label">10th Percentile</div>
+                        </div>
+                        <div class="premium-stat-card">
+                            <div class="premium-stat-value text-blue-600">58 dB</div>
+                            <div class="premium-stat-label">Median Level</div>
+                        </div>
+                        <div class="premium-stat-card">
+                            <div class="premium-stat-value text-orange-600">74 dB</div>
+                            <div class="premium-stat-label">90th Percentile</div>
+                        </div>
+                        <div class="premium-stat-card">
+                            <div class="premium-stat-value text-red-600">89 dB</div>
+                            <div class="premium-stat-label">Peak Events</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-4 border">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="font-semibold">Time-Weighted Average</div>
+                                <div class="text-2xl font-bold text-blue-600">62 dB</div>
+                            </div>
+                            <div class="compliance-indicator compliance-pass text-green-700">
+                                OSHA Compliant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showHealthAnalysis(riskLevel) {
+            const preview = document.getElementById('health-preview');
+            
+            const analyses = {
+                low: {
+                    db: 65,
+                    risk: 'Low Risk',
+                    class: 'health-risk-low',
+                    message: 'Safe noise levels for extended exposure.',
+                    recs: ['Maintain current environment', 'No immediate action needed']
+                },
+                moderate: {
+                    db: 75,
+                    risk: 'Moderate Risk',
+                    class: 'health-risk-moderate',
+                    message: 'Consider hearing protection for extended exposure.',
+                    recs: ['Monitor exposure time', 'Consider noise-canceling headphones']
+                },
+                high: {
+                    db: 95,
+                    risk: 'High Risk',
+                    class: 'health-risk-high',
+                    message: 'Hearing protection required. Limit exposure time.',
+                    recs: ['Use hearing protection (NRR 25+ dB)', 'Limit exposure to 15 minutes', 'Consider noise source reduction']
+                }
+            };
+
+            const analysis = analyses[riskLevel];
+            
+            preview.innerHTML = `
+                <div class="bg-white rounded-xl p-4 border-l-4 border-${riskLevel === 'high' ? 'red' : riskLevel === 'moderate' ? 'yellow' : 'green'}-400">
+                    <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                        <span class="material-symbols-outlined mr-2 text-red-600">health_and_safety</span>
+                        Professional Health Assessment - ${analysis.db} dB
+                    </h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Risk Level:</span>
+                            <span class="health-risk-indicator ${analysis.class}">${analysis.risk}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">${analysis.message}</div>
+                        ${analysis.recs.length > 0 ? `
+                            <div class="mt-2 p-2 bg-gray-50 rounded">
+                                <div class="text-xs font-medium text-gray-900">Recommended Actions:</div>
+                                <ul class="text-xs text-gray-800 list-disc list-inside mt-1">
+                                    ${analysis.recs.map(rec => `<li>${rec}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function simulateVideoAd() {
+            const preview = document.getElementById('ad-preview');
+            preview.innerHTML = `
+                <div class="bg-black rounded-xl p-8 text-white text-center relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-gray-800 bg-opacity-75 px-3 py-1 rounded-full text-sm">
+                        <span id="ad-countdown">20</span>s
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-6xl mb-4">🔊</div>
+                        <h4 class="text-2xl font-bold mb-2">Discover Premium Audio Tools</h4>
+                        <p class="text-lg opacity-90">Professional sound analysis at your fingertips</p>
+                    </div>
+                    <button id="skip-ad" class="mt-4 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg" style="display: none;" onclick="completeAd()">
+                        Skip Ad
+                    </button>
+                </div>
+            `;
+
+            let countdown = 20;
+            const countdownElement = document.getElementById('ad-countdown');
+            const skipButton = document.getElementById('skip-ad');
+            
+            const timer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 15 && skipButton) {
+                    skipButton.style.display = 'inline-block';
+                }
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    completeAd();
+                }
+            }, 1000);
+        }
+
+        function completeAd() {
+            const preview = document.getElementById('ad-preview');
+            preview.innerHTML = `
+                <div class="premium-notification bg-green-600 text-white p-4 rounded-xl">
+                    <div class="flex items-start">
+                        <span class="material-symbols-outlined mr-3 text-xl">star</span>
+                        <div>
+                            <h4 class="font-bold mb-1">Premium Unlocked!</h4>
+                            <p class="text-sm opacity-90">5-minute measurements and advanced features now available</p>
+                            <p class="text-xs opacity-75 mt-2">Session expires in 30 minutes</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showUpgradePrompt() {
+            const preview = document.getElementById('ad-preview');
+            preview.innerHTML = `
+                <div class="premium-upgrade-card">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-red-600 mr-2 text-2xl">upgrade</span>
+                            <h3 class="text-lg font-bold text-gray-900">Unlock Premium Features</h3>
+                        </div>
+                        
+                        <p class="text-gray-600 mb-4">
+                            Get 5-minute measurements, advanced analytics, and detailed health insights
+                        </p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-white rounded-xl p-3 border border-red-100">
+                                <span class="material-symbols-outlined text-red-600 block mb-1">timer</span>
+                                <div class="font-semibold text-sm">5-Minute Measurements</div>
+                                <div class="text-xs text-gray-600">Extended monitoring time</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-3 border border-red-100">
+                                <span class="material-symbols-outlined text-red-600 block mb-1">analytics</span>
+                                <div class="font-semibold text-sm">Advanced Statistics</div>
+                                <div class="text-xs text-gray-600">Detailed trend analysis</div>
+                            </div>
+                        </div>
+                        
+                        <button class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-all transform hover:scale-105" onclick="simulateVideoAd()">
+                            <span class="material-symbols-outlined mr-2">play_circle</span>
+                            Watch Video to Unlock
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateSampleData() {
+            const preview = document.getElementById('export-preview');
+            
+            // Simulate premium feature activation and data generation
+            premiumFeatures.activate();
+            
+            // Generate sample measurement data
+            const sampleData = {
+                sessionInfo: {
+                    timestamp: new Date().toISOString(),
+                    duration: 300,
+                    sampleCount: 3000,
+                    appVersion: 'SoundSense Premium'
+                },
+                summary: {
+                    average: 68,
+                    min: 45,
+                    max: 89,
+                    timeWeightedAverage: 65,
+                    oshaCompliant: true
+                }
+            };
+
+            const csvPreview = [
+                'Timestamp,Time (s),Decibels (dB),Classification',
+                '1725222120000,0.0,52.3,moderate',
+                '1725222120100,0.1,54.1,moderate',
+                '1725222120200,0.2,68.7,loud',
+                '1725222120300,0.3,72.1,loud',
+                '1725222120400,0.4,58.9,moderate',
+                '...,(2995 more samples),...,...'
+            ].join('\\n');
+
+            preview.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-blue-900 mb-2 flex items-center">
+                            <span class="material-symbols-outlined mr-2">description</span>
+                            Export Summary
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <strong>Duration:</strong> 5:00 minutes<br>
+                                <strong>Samples:</strong> 3,000 data points<br>
+                                <strong>TWA:</strong> ${sampleData.summary.timeWeightedAverage} dB
+                            </div>
+                            <div>
+                                <strong>Range:</strong> ${sampleData.summary.min}-${sampleData.summary.max} dB<br>
+                                <strong>Average:</strong> ${sampleData.summary.average} dB<br>
+                                <strong>OSHA:</strong> ${sampleData.summary.oshaCompliant ? '✅ Compliant' : '❌ Non-Compliant'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 border rounded-xl p-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">CSV Preview:</h4>
+                        <pre class="text-xs text-gray-600 bg-white p-2 rounded border overflow-x-auto">${csvPreview}</pre>
+                    </div>
+                    
+                    <div class="flex justify-center space-x-4">
+                        <button class="data-export-button" onclick="downloadSampleCSV()">
+                            <span class="material-symbols-outlined mr-2">download</span>
+                            Download CSV
+                        </button>
+                        <button class="data-export-button" onclick="downloadSampleJSON()">
+                            <span class="material-symbols-outlined mr-2">data_object</span>
+                            Download JSON
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function downloadSampleCSV() {
+            const csvContent = [
+                'Timestamp,Time (s),Decibels (dB),Classification',
+                '1725222120000,0.0,52.3,moderate',
+                '1725222120100,0.1,54.1,moderate',
+                '1725222120200,0.2,68.7,loud',
+                '1725222120300,0.3,72.1,loud',
+                '1725222120400,0.4,58.9,moderate'
+            ].join('\\n');
+            
+            downloadFile(csvContent, 'soundsense-sample-measurement.csv', 'text/csv');
+        }
+
+        function downloadSampleJSON() {
+            const jsonData = {
+                sessionInfo: {
+                    timestamp: new Date().toISOString(),
+                    duration: 300,
+                    sampleCount: 5,
+                    appVersion: 'SoundSense Premium'
+                },
+                measurements: [
+                    {timestamp: 0, db: 52.3, classification: 'moderate'},
+                    {timestamp: 100, db: 54.1, classification: 'moderate'},
+                    {timestamp: 200, db: 68.7, classification: 'loud'},
+                    {timestamp: 300, db: 72.1, classification: 'loud'},
+                    {timestamp: 400, db: 58.9, classification: 'moderate'}
+                ],
+                analysis: {
+                    average: 61.2,
+                    timeWeightedAverage: 59.8,
+                    oshaCompliant: true,
+                    riskLevel: 'low'
+                }
+            };
+            
+            downloadFile(JSON.stringify(jsonData, null, 2), 'soundsense-sample-analysis.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Premium Features Test Page Loaded');
+            console.log('PremiumFeatures available:', typeof PremiumFeatures !== 'undefined');
+            console.log('NoiseClassifier available:', typeof NoiseClassifier !== 'undefined');
+            console.log('Monetization available:', typeof Monetization !== 'undefined');
+        });
+    </script>
+</body>
+</html>

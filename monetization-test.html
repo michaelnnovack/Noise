@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundSense - Monetization System Test</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+        .test-panel {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-button {
+            background: #dc2626;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .test-button:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+        
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body style="background-color: #f9fafb; font-family: 'Plus Jakarta Sans', sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+        <header style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="color: #111827; font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">
+                <span class="material-symbols-outlined" style="color: #dc2626; font-size: 2rem; vertical-align: middle; margin-right: 0.5rem;">volume_up</span>
+                SoundSense Monetization Test
+            </h1>
+            <p style="color: #6b7280;">Testing video ad integration and premium features</p>
+        </header>
+
+        <div class="test-panel">
+            <h2 style="color: #111827; font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">
+                <span class="material-symbols-outlined" style="color: #dc2626; margin-right: 0.5rem;">play_circle</span>
+                Video Ad System Test
+            </h2>
+            
+            <div style="margin-bottom: 1rem;">
+                <div id="monetization-status" class="status-indicator status-info">Initializing...</div>
+                <div id="measurement-count" class="status-indicator status-warning">Measurements: 0</div>
+                <div id="premium-status" class="status-indicator status-warning">Free Mode</div>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <button id="test-ad-trigger" class="test-button">
+                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">smart_display</span>
+                    Test Video Ad
+                </button>
+                <button id="simulate-measurement" class="test-button">
+                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">graphic_eq</span>
+                    Simulate Measurement
+                </button>
+                <button id="test-premium-unlock" class="test-button">
+                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">star</span>
+                    Test Premium Unlock
+                </button>
+                <button id="reset-data" class="test-button" style="background: #6b7280;">
+                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">refresh</span>
+                    Reset Data
+                </button>
+            </div>
+            
+            <div style="background: #f3f4f6; border-radius: 0.5rem; padding: 1rem;">
+                <h3 style="color: #374151; font-weight: 600; margin-bottom: 0.5rem;">Test Results:</h3>
+                <div id="test-output" style="font-family: monospace; color: #4b5563; font-size: 0.875rem;">
+                    Ready to test monetization system...
+                </div>
+            </div>
+        </div>
+
+        <div class="test-panel">
+            <h2 style="color: #111827; font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">
+                <span class="material-symbols-outlined" style="color: #dc2626; margin-right: 0.5rem;">analytics</span>
+                Revenue Analytics
+            </h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div style="text-align: center; padding: 1rem; background: #f9fafb; border-radius: 0.5rem;">
+                    <div id="ads-served" style="font-size: 1.5rem; font-weight: bold; color: #111827;">0</div>
+                    <div style="color: #6b7280; font-size: 0.875rem;">Ads Served</div>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f9fafb; border-radius: 0.5rem;">
+                    <div id="ads-completed" style="font-size: 1.5rem; font-weight: bold; color: #111827;">0</div>
+                    <div style="color: #6b7280; font-size: 0.875rem;">Ads Completed</div>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f9fafb; border-radius: 0.5rem;">
+                    <div id="completion-rate" style="font-size: 1.5rem; font-weight: bold; color: #111827;">0%</div>
+                    <div style="color: #6b7280; font-size: 0.875rem;">Completion Rate</div>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f9fafb; border-radius: 0.5rem;">
+                    <div id="session-value" style="font-size: 1.5rem; font-weight: bold; color: #16a34a;">$0.00</div>
+                    <div style="color: #6b7280; font-size: 0.875rem;">Session Value</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/monetization.js"></script>
+    
+    <script>
+        // Test interface for monetization system
+        let testLog = [];
+        
+        function log(message) {
+            testLog.push(`${new Date().toLocaleTimeString()}: ${message}`);
+            document.getElementById('test-output').textContent = testLog.slice(-10).join('\n');
+            console.log('MonetizationTest:', message);
+        }
+        
+        function updateStatus() {
+            if (typeof monetizationSystem !== 'undefined' && monetizationSystem) {
+                document.getElementById('monetization-status').textContent = 'Ready';
+                document.getElementById('monetization-status').className = 'status-indicator status-success';
+                
+                document.getElementById('measurement-count').textContent = `Measurements: ${monetizationSystem.measurementCount}`;
+                
+                if (monetizationSystem.premiumUnlocked) {
+                    document.getElementById('premium-status').textContent = 'Premium Active';
+                    document.getElementById('premium-status').className = 'status-indicator status-success';
+                } else {
+                    document.getElementById('premium-status').textContent = 'Free Mode';
+                    document.getElementById('premium-status').className = 'status-indicator status-warning';
+                }
+                
+                // Update revenue analytics
+                document.getElementById('ads-served').textContent = monetizationSystem.revenueTracking.adsServed;
+                document.getElementById('ads-completed').textContent = monetizationSystem.revenueTracking.adsCompleted;
+                document.getElementById('completion-rate').textContent = `${monetizationSystem.getCompletionRate().toFixed(1)}%`;
+                document.getElementById('session-value').textContent = `$${monetizationSystem.getSessionValue()}`;
+            } else {
+                document.getElementById('monetization-status').textContent = 'Loading...';
+                document.getElementById('monetization-status').className = 'status-indicator status-warning';
+            }
+        }
+        
+        // Test button handlers
+        document.getElementById('test-ad-trigger').addEventListener('click', async () => {
+            log('Testing video ad trigger...');
+            if (monetizationSystem) {
+                try {
+                    const result = await monetizationSystem.showVideoAd();
+                    log(`Video ad result: ${result ? 'Completed' : 'Skipped'}`);
+                    updateStatus();
+                } catch (error) {
+                    log(`Video ad error: ${error.message}`);
+                }
+            } else {
+                log('Monetization system not ready');
+            }
+        });
+        
+        document.getElementById('simulate-measurement').addEventListener('click', () => {
+            log('Simulating measurement request...');
+            if (monetizationSystem) {
+                const shouldShow = monetizationSystem.shouldShowAd();
+                log(`Should show ad: ${shouldShow}`);
+                updateStatus();
+            } else {
+                log('Monetization system not ready');
+            }
+        });
+        
+        document.getElementById('test-premium-unlock').addEventListener('click', () => {
+            log('Testing premium unlock...');
+            if (monetizationSystem) {
+                monetizationSystem.unlockPremiumFeatures();
+                log('Premium features unlocked for testing');
+                updateStatus();
+            } else {
+                log('Monetization system not ready');
+            }
+        });
+        
+        document.getElementById('reset-data').addEventListener('click', () => {
+            log('Resetting monetization data...');
+            localStorage.removeItem('soundsense-monetization-data');
+            location.reload();
+        });
+        
+        // Initialize and update status periodically
+        setInterval(updateStatus, 1000);
+        updateStatus();
+        
+        log('Monetization test interface initialized');
+    </script>
+</body>
+</html>
