@@ -1,0 +1,470 @@
+/* SoundSense - Professional Gauge Component Styles */
+/* Modern design system aligned with SoundSense branding */
+
+/* Gauge Container - Modern Design */
+.gauge-container,
+#gauge-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border: 4px solid var(--gray-200, #e5e7eb);
+    border-radius: 50%;
+    box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05),
+        inset 0 2px 4px rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.gauge-container:hover,
+#gauge-container:hover {
+    transform: scale(1.02);
+    box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04),
+        inset 0 2px 4px rgba(255, 255, 255, 0.95);
+    border-color: var(--red-600, #dc2626);
+}
+
+/* Professional gauge canvas styling */
+.professional-gauge,
+.gauge-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+    animation: gaugeStartup 0.8s ease-out;
+}
+
+/* Digital readout - Modern design */
+.gauge-digital-readout,
+#current-reading {
+    position: absolute;
+    bottom: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid var(--red-200, #fecaca);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-family: var(--font-family, 'Plus Jakarta Sans'), monospace;
+    color: var(--gray-900, #111827);
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    min-width: 120px;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+/* Current reading styles for the new design */
+#current-reading {
+    position: static;
+    transform: none;
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    box-shadow: none;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+/* dB Value styling */
+.gauge-value,
+#current-db {
+    display: inline-block;
+    font-size: 48px;
+    font-weight: 700;
+    margin-right: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: color 0.3s ease;
+    color: var(--gray-900, #111827);
+}
+
+.gauge-unit,
+.db-unit {
+    font-size: 20px;
+    font-weight: 600;
+    opacity: 0.7;
+    color: var(--gray-600, #4b5563);
+}
+
+/* Color-coded dB ranges - SoundSense palette */
+.gauge-value.safe,
+.db-range-quiet,
+#current-db.safe {
+    color: var(--green-800, #166534);
+}
+
+.gauge-value.moderate,
+.db-range-moderate,
+#current-db.moderate {
+    color: #92400e; /* Yellow-800 */
+}
+
+.gauge-value.loud,
+.db-range-loud,
+#current-db.loud {
+    color: #c2410c; /* Orange-700 */
+}
+
+.gauge-value.dangerous,
+.db-range-dangerous,
+#current-db.dangerous {
+    color: var(--red-600, #dc2626);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.gauge-value.very-loud,
+#current-db.very-loud {
+    color: var(--red-700, #b91c1c);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Classification styles */
+#noise-category {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+#noise-category.quiet {
+    background-color: var(--green-100, #dcfce7);
+    color: var(--green-800, #166534);
+    border-color: var(--green-200, #bbf7d0);
+}
+
+#noise-category.moderate {
+    background-color: #fef3c7; /* Yellow-100 */
+    color: #92400e; /* Yellow-800 */
+    border-color: #fde68a; /* Yellow-200 */
+}
+
+#noise-category.loud {
+    background-color: #fed7aa; /* Orange-100 */
+    color: #c2410c; /* Orange-700 */
+    border-color: #fdba74; /* Orange-200 */
+}
+
+#noise-category.very-loud {
+    background-color: #fecaca; /* Red-200 */
+    color: var(--red-700, #b91c1c);
+    border-color: #fca5a5; /* Red-300 */
+}
+
+#noise-category.dangerous {
+    background-color: var(--red-600, #dc2626);
+    color: white;
+    border-color: var(--red-700, #b91c1c);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Gauge placeholder when no canvas */
+#gauge-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border: 3px solid var(--gray-300, #d1d5db);
+    border-top-color: var(--red-600, #dc2626);
+    border-radius: 50%;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+/* Loading animation for gauge */
+.gauge-loading #gauge-container::before {
+    animation: spin 1s linear infinite;
+}
+
+/* Enhanced animations */
+@keyframes gaugeStartup {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        text-shadow: 0 4px 12px currentColor;
+    }
+}
+
+/* Responsive design - Mobile first */
+@media (max-width: 480px) {
+    .gauge-value,
+    #current-db {
+        font-size: 40px;
+    }
+    
+    .gauge-unit,
+    .db-unit {
+        font-size: 18px;
+    }
+    
+    .gauge-digital-readout {
+        padding: 8px 16px;
+        font-size: 16px;
+        min-width: 100px;
+    }
+    
+    #noise-category {
+        padding: 6px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .gauge-value,
+    #current-db {
+        font-size: 56px;
+    }
+    
+    .gauge-unit,
+    .db-unit {
+        font-size: 24px;
+    }
+    
+    #noise-category {
+        padding: 10px 24px;
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .gauge-value,
+    #current-db {
+        font-size: 64px;
+    }
+    
+    .gauge-unit,
+    .db-unit {
+        font-size: 28px;
+    }
+    
+    .gauge-container:hover,
+    #gauge-container:hover {
+        transform: scale(1.01);
+    }
+}
+
+/* Accessibility improvements */
+.gauge-container:focus,
+#gauge-container:focus {
+    outline: 3px solid var(--red-600, #dc2626);
+    outline-offset: 4px;
+}
+
+.gauge-container:focus-visible,
+#gauge-container:focus-visible {
+    outline: 3px solid var(--red-600, #dc2626);
+    outline-offset: 4px;
+}
+
+/* Screen reader friendly labels */
+.gauge-sr-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    clip-path: inset(50%);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .gauge-container,
+    #gauge-container {
+        border: 3px solid;
+        background: white;
+        box-shadow: none;
+    }
+    
+    .gauge-digital-readout {
+        background: black;
+        border: 2px solid white;
+        color: white;
+    }
+    
+    .gauge-value,
+    #current-db {
+        color: black;
+    }
+    
+    #noise-category {
+        background: white;
+        color: black;
+        border: 2px solid black;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .gauge-container,
+    #gauge-container,
+    .gauge-digital-readout,
+    .gauge-value,
+    #current-db,
+    #noise-category {
+        animation: none;
+        transition: none;
+    }
+    
+    .gauge-container:hover,
+    #gauge-container:hover {
+        transform: none;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1); }
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .gauge-container,
+    #gauge-container {
+        background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+        border-color: #4b5563;
+        box-shadow: 
+            0 10px 15px -3px rgba(0, 0, 0, 0.3),
+            0 4px 6px -2px rgba(0, 0, 0, 0.2),
+            inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    }
+    
+    .gauge-digital-readout {
+        background: rgba(31, 41, 55, 0.95);
+        border-color: #6b7280;
+        color: #f9fafb;
+    }
+    
+    .gauge-value,
+    #current-db {
+        color: #f9fafb;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .gauge-unit,
+    .db-unit {
+        color: #d1d5db;
+    }
+    
+    #gauge-container::before {
+        border-color: #6b7280;
+        border-top-color: var(--red-600, #dc2626);
+    }
+}
+
+/* Loading state */
+.gauge-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Error state */
+.gauge-error {
+    filter: grayscale(0.5);
+    opacity: 0.7;
+}
+
+.gauge-error .gauge-digital-readout {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: var(--red-600, #dc2626);
+    color: var(--red-600, #dc2626);
+}
+
+.gauge-error .gauge-digital-readout::before {
+    content: '⚠ ';
+    color: var(--red-600, #dc2626);
+    margin-right: 4px;
+}
+
+.gauge-error #current-db {
+    color: var(--red-600, #dc2626);
+}
+
+/* Print styles */
+@media print {
+    .gauge-container,
+    #gauge-container {
+        border: 2px solid black;
+        background: white;
+        box-shadow: none;
+    }
+    
+    .gauge-value,
+    #current-db,
+    .gauge-unit,
+    .db-unit {
+        color: black !important;
+    }
+    
+    #noise-category {
+        background: white;
+        color: black;
+        border: 1px solid black;
+    }
+}
+
+/* Compatibility with legacy class names */
+.professional-gauge {
+    /* Handled by gauge-canvas */
+}
+
+.gauge-needle,
+.gauge-center,
+.gauge-labels,
+.gauge-label,
+.gauge-tick {
+    display: none; /* Canvas-rendered elements */
+}

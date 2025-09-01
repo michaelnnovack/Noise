@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gauge Test - Noise Detector</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/gauge.css">
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .control-group {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .theme-btn {
+            background: #2196F3;
+        }
+        
+        .theme-btn:hover {
+            background: #1976D2;
+        }
+        
+        input[type="range"] {
+            width: 200px;
+            margin: 10px;
+        }
+        
+        .info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .current-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Professional Analog Gauge Test</h1>
+        <p>Test the enhanced gauge component with various features and themes</p>
+        
+        <div id="gauge-test-container">
+            <!-- Gauge will be rendered here -->
+        </div>
+        
+        <div class="current-value">
+            Current Value: <span id="current-value">0</span> dB
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>Manual Testing</h3>
+                <input type="range" id="manual-slider" min="0" max="140" value="0" step="1">
+                <br>
+                <label>Manual dB Value: <span id="slider-value">0</span></label>
+            </div>
+            
+            <div class="control-group">
+                <h3>Presets</h3>
+                <button onclick="setPreset(25)">Quiet (25 dB)</button>
+                <button onclick="setPreset(45)">Library (45 dB)</button>
+                <button onclick="setPreset(60)">Normal Talk (60 dB)</button>
+                <button onclick="setPreset(75)">Busy Street (75 dB)</button>
+                <button onclick="setPreset(90)">Lawnmower (90 dB)</button>
+                <button onclick="setPreset(110)">Concert (110 dB)</button>
+                <button onclick="setPreset(130)">Jet Engine (130 dB)</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Animation Test</h3>
+                <button onclick="animateTest()">Random Animation</button>
+                <button onclick="sweepTest()">Sweep Test</button>
+                <button onclick="stopAnimation()">Stop Animation</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Themes</h3>
+                <button class="theme-btn" onclick="setTheme('dark')">Dark Theme</button>
+                <button class="theme-btn" onclick="setTheme('light')">Light Theme</button>
+                <button class="theme-btn" onclick="setTheme('professional')">Professional</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Gauge Controls</h3>
+                <button onclick="resizeGauge(200)">Small (200px)</button>
+                <button onclick="resizeGauge(280)">Default (280px)</button>
+                <button onclick="resizeGauge(350)">Large (350px)</button>
+            </div>
+        </div>
+        
+        <div class="info">
+            <h3>Features Demonstrated:</h3>
+            <ul>
+                <li>✅ Professional speedometer-style design</li>
+                <li>✅ Real-time dB range 0-140 with color-coded zones</li>
+                <li>✅ Smooth 60fps needle animation</li>
+                <li>✅ Digital readout overlay</li>
+                <li>✅ Multiple theme support</li>
+                <li>✅ Responsive design (test by resizing window)</li>
+                <li>✅ Enhanced tick marks and labels</li>
+                <li>✅ 3D visual effects with gradients and shadows</li>
+                <li>✅ Accessibility features</li>
+                <li>✅ Mobile-friendly touch interface</li>
+            </ul>
+            
+            <h3>Integration Notes:</h3>
+            <ul>
+                <li>Gauge automatically handles retina displays</li>
+                <li>Responsive sizing based on container width</li>
+                <li>Compatible with all required methods: initialize(), updateReading(), setTheme(), resize()</li>
+                <li>Optimized for user engagement and ad revenue retention</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="js/gauge.js"></script>
+    <script>
+        let gauge;
+        let animationInterval;
+        
+        // Initialize gauge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                gauge = new Gauge('gauge-test-container', {
+                    size: 280,
+                    theme: 'dark'
+                });
+                
+                console.log('Test gauge initialized successfully');
+                updateCurrentValue(0);
+                
+                // Setup manual slider
+                const slider = document.getElementById('manual-slider');
+                const sliderValue = document.getElementById('slider-value');
+                
+                slider.addEventListener('input', function() {
+                    const value = parseInt(this.value);
+                    sliderValue.textContent = value;
+                    gauge.updateReading(value);
+                    updateCurrentValue(value);
+                });
+                
+            } catch (error) {
+                console.error('Failed to initialize test gauge:', error);
+                document.getElementById('gauge-test-container').innerHTML = 
+                    '<div style="color: red; padding: 20px;">Error: Failed to initialize gauge</div>';
+            }
+        });
+        
+        function setPreset(value) {
+            if (gauge) {
+                gauge.updateReading(value);
+                updateCurrentValue(value);
+                document.getElementById('manual-slider').value = value;
+                document.getElementById('slider-value').textContent = value;
+            }
+        }
+        
+        function animateTest() {
+            stopAnimation();
+            animationInterval = setInterval(() => {
+                const randomValue = Math.floor(Math.random() * 141);
+                if (gauge) {
+                    gauge.updateReading(randomValue);
+                    updateCurrentValue(randomValue);
+                }
+            }, 100);
+        }
+        
+        function sweepTest() {
+            stopAnimation();
+            let value = 0;
+            let direction = 1;
+            
+            animationInterval = setInterval(() => {
+                if (value >= 140) direction = -1;
+                if (value <= 0) direction = 1;
+                
+                value += direction * 2;
+                
+                if (gauge) {
+                    gauge.updateReading(value);
+                    updateCurrentValue(value);
+                }
+            }, 50);
+        }
+        
+        function stopAnimation() {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+        }
+        
+        function setTheme(theme) {
+            if (gauge) {
+                gauge.setTheme(theme);
+                console.log('Theme set to:', theme);
+                
+                // Update background based on theme
+                if (theme === 'light') {
+                    document.body.style.background = '#f8f9fa';
+                    document.body.style.color = '#2c3e50';
+                } else {
+                    document.body.style.background = '#1a1a1a';
+                    document.body.style.color = '#ffffff';
+                }
+            }
+        }
+        
+        function resizeGauge(size) {
+            if (gauge) {
+                gauge.resize(size);
+                console.log('Gauge resized to:', size);
+            }
+        }
+        
+        function updateCurrentValue(value) {
+            const currentValueElement = document.getElementById('current-value');
+            if (currentValueElement) {
+                currentValueElement.textContent = Math.round(value);
+                
+                // Color code based on dB ranges
+                if (value < 50) {
+                    currentValueElement.style.color = '#27ae60';
+                } else if (value < 70) {
+                    currentValueElement.style.color = '#f1c40f';
+                } else if (value < 85) {
+                    currentValueElement.style.color = '#e67e22';
+                } else {
+                    currentValueElement.style.color = '#e74c3c';
+                }
+            }
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (gauge) {
+                // Let gauge handle responsive sizing automatically
+                gauge.handleResize();
+            }
+        });
+    </script>
+</body>
+</html>

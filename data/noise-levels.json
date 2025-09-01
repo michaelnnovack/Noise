@@ -1,0 +1,153 @@
+{
+  "classifications": [
+    {
+      "range": "quiet",
+      "minDb": 0,
+      "maxDb": 50,
+      "category": "Quiet",
+      "color": "#27ae60",
+      "description": "Peaceful environment",
+      "examples": [
+        "Library reading room (30 dB)",
+        "Soft whisper (25 dB)",
+        "Quiet rural area at night (20 dB)",
+        "Recording studio (15 dB)",
+        "Breathing sounds (10 dB)"
+      ],
+      "healthInfo": {
+        "impact": "Ideal for concentration and rest",
+        "recommendation": "Perfect for sleep and focused work",
+        "safety": "No health concerns"
+      }
+    },
+    {
+      "range": "moderate",
+      "minDb": 50,
+      "maxDb": 70,
+      "category": "Moderate",
+      "color": "#f1c40f",
+      "description": "Normal daily environment",
+      "examples": [
+        "Normal conversation (60 dB)",
+        "Office environment (55 dB)",
+        "Quiet residential area (50 dB)",
+        "Moderate rainfall (50 dB)",
+        "Electric toothbrush (55 dB)"
+      ],
+      "healthInfo": {
+        "impact": "Comfortable for most daily activities",
+        "recommendation": "Suitable for work and social interaction",
+        "safety": "Safe for extended exposure"
+      }
+    },
+    {
+      "range": "loud",
+      "minDb": 70,
+      "maxDb": 85,
+      "category": "Loud",
+      "color": "#e67e22",
+      "description": "Noisy but tolerable",
+      "examples": [
+        "Heavy traffic (75 dB)",
+        "Vacuum cleaner (75 dB)",
+        "Busy restaurant (70 dB)",
+        "Hair dryer (80 dB)",
+        "Garbage disposal (80 dB)"
+      ],
+      "healthInfo": {
+        "impact": "May cause fatigue with prolonged exposure",
+        "recommendation": "Take breaks in quieter environments",
+        "safety": "Generally safe but monitor exposure time"
+      }
+    },
+    {
+      "range": "very_loud",
+      "minDb": 85,
+      "maxDb": 100,
+      "category": "Very Loud",
+      "color": "#e74c3c",
+      "description": "Risk of hearing damage",
+      "examples": [
+        "City traffic (85 dB)",
+        "School cafeteria (85 dB)",
+        "Leaf blower (90 dB)",
+        "Subway train (90 dB)",
+        "Shouting (95 dB)"
+      ],
+      "healthInfo": {
+        "impact": "Risk of hearing damage with extended exposure",
+        "recommendation": "Limit exposure time, use ear protection",
+        "safety": "Potentially harmful - 8 hours max at 85 dB"
+      }
+    },
+    {
+      "range": "dangerous",
+      "minDb": 100,
+      "maxDb": 130,
+      "category": "Dangerous",
+      "color": "#c0392b",
+      "description": "Immediate risk to hearing",
+      "examples": [
+        "Motorcycle (100 dB)",
+        "Power tools (105 dB)",
+        "Rock concert (110 dB)",
+        "Chainsaw (115 dB)",
+        "Jet engine at takeoff (120 dB)"
+      ],
+      "healthInfo": {
+        "impact": "Immediate risk of permanent hearing damage",
+        "recommendation": "Use ear protection immediately",
+        "safety": "Dangerous - can cause immediate hearing loss"
+      }
+    }
+  ],
+  "healthGuidelines": {
+    "safeExposureLimits": [
+      { "dbLevel": 85, "maxExposure": "8 hours" },
+      { "dbLevel": 90, "maxExposure": "2 hours" },
+      { "dbLevel": 95, "maxExposure": "30 minutes" },
+      { "dbLevel": 100, "maxExposure": "7 minutes" },
+      { "dbLevel": 105, "maxExposure": "2 minutes" },
+      { "dbLevel": 110, "maxExposure": "30 seconds" }
+    ],
+    "warningThresholds": {
+      "caution": 70,
+      "warning": 85,
+      "danger": 100
+    }
+  },
+  "calibrationReferences": [
+    {
+      "sound": "Hand clap",
+      "typicalDb": 65,
+      "description": "Sharp hand clap at arm's length"
+    },
+    {
+      "sound": "Normal speech",
+      "typicalDb": 60,
+      "description": "Conversation at 3 feet distance"
+    },
+    {
+      "sound": "Whisper",
+      "typicalDb": 30,
+      "description": "Soft whisper at close range"
+    }
+  ],
+  "frequencyInfo": {
+    "lowFrequency": {
+      "range": "20-250 Hz",
+      "examples": ["Thunder", "Heavy machinery", "Bass music"],
+      "characteristics": "Felt as much as heard, can travel long distances"
+    },
+    "midFrequency": {
+      "range": "250-4000 Hz",
+      "examples": ["Human speech", "Most musical instruments", "Alarms"],
+      "characteristics": "Most important for speech understanding"
+    },
+    "highFrequency": {
+      "range": "4000-20000 Hz",
+      "examples": ["Bird songs", "Cymbals", "S and T sounds in speech"],
+      "characteristics": "First to be lost in hearing damage"
+    }
+  }
+}
